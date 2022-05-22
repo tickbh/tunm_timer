@@ -41,18 +41,20 @@ impl<F:Factory> Timer<F> {
 
     /// 添加定时器, 非定时器, 通常是重复定时器结束后进行的调用
     pub fn add_timer(&mut self, mut handle: Handler<F>) -> u64 {
-        if handle.tick_step == 0 {
+        if handle.tick_step == 0 && handle.tick_ms == 0 {
             return 0;
         }
         if handle.time_id == 0 {
             handle.time_id = self.calc_new_id();
         };
         let time_id = handle.time_id;
-        if handle.at_once {
-            handle.tick_ms = now_micro() + handle.tick_step;
-            handle.at_once = false;
-        } else {
-            handle.tick_ms = now_micro();
+        if handle.tick_step != 0 {
+            if handle.at_once {
+                handle.tick_ms = now_micro() + handle.tick_step;
+                handle.at_once = false;
+            } else {
+                handle.tick_ms = now_micro();
+            }
         }
         self.time_maps.insert(time_id, handle.tick_ms);
         self.timer_queue.insert(
@@ -72,6 +74,10 @@ impl<F:Factory> Timer<F> {
         self.timer_queue.remove(&key)
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.timer_queue.len() == 0
+    }
+
     /// 取出时间轴最小的一个值
     pub fn tick_first(&self) -> Option<u64> {
         self.timer_queue
@@ -88,10 +94,18 @@ impl<F:Factory> Timer<F> {
         if let Some((key, handle)) = self.timer_queue.pop_first() {
             let is_remove = match handle.factory.on_trigger(self, key.1) {
                 RetTimer::Continue => {
-                    false
+                    if handle.tick_step == 0 {
+                        true
+                    } else {
+                        false
+                    }
                 }
                 RetTimer::Ok => {
-                    handle.is_repeat
+                    if handle.tick_step == 0 {
+                        true
+                    } else {
+                        handle.is_repeat
+                    }
                 }
                 RetTimer::Over => {
                     true

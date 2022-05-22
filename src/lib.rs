@@ -32,22 +32,35 @@ impl<F: Factory> fmt::Display for Handler<F> {
     }
 }
 
+impl<F:Factory> Handler<F> {
+    pub fn new_step(factory: F, tick_step: u64, is_repeat: bool, at_once: bool) -> Handler<F> {
+        debug_assert!(tick_step > 0, "Step Mode Must Big 0s");
+        let tick_step = ::std::cmp::max(1, tick_step);
+        Handler {
+            factory,
+            time_id:0,
+            tick_ms:0u64,
+            tick_step,
+            is_repeat,
+            at_once,
+        }
+    }
+
+    pub fn new_at(factory: F, tick_ms: u64) -> Handler<F> {
+        Handler {
+            factory,
+            time_id:0,
+            tick_ms:tick_ms,
+            tick_step:0,
+            is_repeat:false,
+            at_once:false,
+        }
+    }
+}
+
 pub trait Factory : Sized {
     fn on_trigger(&self, timer: &mut Timer<Self>, id: u64) -> RetTimer;
 }
-
-
-// impl<F, H> Factory for F
-// where
-//     H: Handler,
-//     F: FnMut() -> H,
-// {
-//     type Handler = H;
-
-//     fn timer_made(&mut self) -> H {
-//         self()
-//     }
-// }
 
 
 pub fn now_micro() -> u64 {
