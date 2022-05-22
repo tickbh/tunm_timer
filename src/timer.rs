@@ -104,7 +104,7 @@ impl<F:Factory> Timer<F> {
                     if handle.tick_step == 0 {
                         true
                     } else {
-                        handle.is_repeat
+                        !handle.is_repeat
                     }
                 }
                 RetTimer::Over => {

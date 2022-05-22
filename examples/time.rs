@@ -21,7 +21,7 @@ impl tunm_timer::Factory for RepeatTimeHandle {
         if self.times > 10 {
             return RetTimer::Over;
         }
-        println!("ontigger = {:}", id);
+        println!("ontigger = {:} self.times = {}", id, self.times);
         RetTimer::Ok
         // timer.add_timer(mut handle: Handler<F>)
     }
@@ -30,12 +30,12 @@ impl tunm_timer::Factory for RepeatTimeHandle {
 fn main() {
     println!("ok");
     let mut timer = Timer::new(u64::MAX);
-    let  time = timer.add_timer(Handler::new_at(
-        TimeHandle{},
-        tunm_timer::now_micro() + 1000,
-    ));
+    // let  time = timer.add_timer(Handler::new_at(
+    //     TimeHandle{},
+    //     tunm_timer::now_micro() + 1000,
+    // ));
 
-    println!("time == {}", time);
+    // println!("time == {}", time);
 
     let  time1 = timer.add_timer(Handler::new_step(
         RepeatTimeHandle{times:0}, 1000, true, true));
