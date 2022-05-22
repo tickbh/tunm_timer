@@ -59,7 +59,7 @@ impl<F:Factory> Handler<F> {
 }
 
 pub trait Factory : Sized {
-    fn on_trigger(&self, timer: &mut Timer<Self>, id: u64) -> RetTimer;
+    fn on_trigger(&mut self, timer: &mut Timer<Self>, id: u64) -> RetTimer;
 }
 
 

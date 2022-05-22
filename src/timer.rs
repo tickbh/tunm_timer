@@ -91,7 +91,7 @@ impl<F:Factory> Timer<F> {
         if tm < self.tick_first().unwrap_or(tm + 1) {
             return None;
         }
-        if let Some((key, handle)) = self.timer_queue.pop_first() {
+        if let Some((key, mut handle)) = self.timer_queue.pop_first() {
             let is_remove = match handle.factory.on_trigger(self, key.1) {
                 RetTimer::Continue => {
                     if handle.tick_step == 0 {
