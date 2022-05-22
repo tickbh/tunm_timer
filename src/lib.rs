@@ -45,6 +45,10 @@ impl<F:Factory> Handler<F> {
             at_once,
         }
     }
+    
+    pub fn new_step_ms(factory: F, tick_step: u64, is_repeat: bool, at_once: bool) -> Handler<F> {
+        Self::new_step(factory, tick_step * 1000, is_repeat, at_once)
+    }
 
     pub fn new_at(factory: F, tick_ms: u64) -> Handler<F> {
         Handler {
@@ -55,6 +59,10 @@ impl<F:Factory> Handler<F> {
             is_repeat:false,
             at_once:false,
         }
+    }
+
+    pub fn new_at_ms(factory: F, tick_ms: u64) -> Handler<F> {
+        Self::new_at(factory, tick_ms * 1000)
     }
 }
 

@@ -10,7 +10,7 @@ checksum = "c30302bfb88dd71dce9b3577ab7f607a246ecee387717e937d49466a6d4d4760"
 
 [[package]]
 name = "tunm_timer"
-version = "0.1.1"
+version = "0.1.3"
 dependencies = [
  "rbtree",
 ]
