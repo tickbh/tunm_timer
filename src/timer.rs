@@ -3,6 +3,8 @@ use std::fmt;
 use std::cmp::{Ord, Ordering};
 use std::collections::HashMap;
 use rbtree::RBTree;
+use std::{thread, time};
+
 
 #[derive(PartialEq, Eq)]
 struct TreeKey(u64, u64);
@@ -12,6 +14,8 @@ pub struct Timer<F: Factory> {
     time_maps: HashMap<u64, u64>,
     time_id: u64,
     time_max_id: u64,
+    trigger_step: u64,
+    shutdown: bool,
 }
 
 impl Ord for TreeKey {
@@ -30,14 +34,42 @@ impl PartialOrd for TreeKey {
 }
 
 impl<F:Factory> Timer<F> {
-    pub fn new(time_max_id: u64) -> Timer<F> {
+    pub fn new(trigger_step: u64) -> Timer<F> {
         Timer {
             timer_queue: RBTree::new(),
             time_maps: HashMap::new(),
             time_id: 0,
-            time_max_id: time_max_id,
+            time_max_id: u32::MAX as u64,
+            trigger_step: trigger_step,
+            shutdown: false,
         }
     }
+
+    pub fn get_max_id(&self) -> u64 {
+        self.time_max_id
+    }
+
+    pub fn set_max_id(&mut self, max_id : u64) {
+        self.time_max_id = max_id;
+    }
+
+
+    pub fn get_trigger_step(&self) -> u64 {
+        self.trigger_step
+    }
+
+    pub fn set_trigger_step(&mut self, trigger_step : u64) {
+        self.trigger_step = trigger_step;
+    }
+
+    pub fn is_shutdown(&self) -> bool {
+        self.shutdown
+    }
+
+    pub fn set_shutdown(&mut self, shutdown: bool) {
+        self.shutdown = shutdown;
+    }
+
 
     /// 添加定时器, 非定时器, 通常是重复定时器结束后进行的调用
     pub fn add_timer(&mut self, mut handle: Handler<F>) -> u64 {
@@ -135,6 +167,24 @@ impl<F:Factory> Timer<F> {
             break;
         }
         self.time_id
+    }
+
+    pub fn run_loop_timer(&mut self) {
+        let mut last_trigger_time = now_microsecond();
+        while !self.shutdown {
+            if self.trigger_step > 0 {
+                let escape = now_microsecond() - last_trigger_time;
+                if self.trigger_step > escape {
+                    println!("will sleep time = {:?}", self.trigger_step - escape);
+                    let trigger_sleep = time::Duration::from_micros(self.trigger_step - escape);
+                    thread::sleep(trigger_sleep);
+                }
+            }
+            let now = now_microsecond();
+            while let Some(_) = self.tick_time(now) {
+            }
+            last_trigger_time = now_microsecond();
+        }
     }
 }
 

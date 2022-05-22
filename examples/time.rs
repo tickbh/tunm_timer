@@ -15,26 +15,23 @@ struct RepeatTimeHandle {
 }
 impl tunm_timer::Factory for RepeatTimeHandle {
     fn on_trigger(&mut self, timer: &mut Timer<Self>, id: u64) -> RetTimer {
+        println!("on_trigger = {:} self.times = {}", id, self.times);
         self.times += 1;
         if self.times > 10 {
+            if timer.is_empty() {
+                timer.set_shutdown(true);
+            }
             return RetTimer::Over;
         }
-        println!("ontigger = {:} self.times = {}", id, self.times);
+        println!("on_trigger = {:} self.times = {}", id, self.times);
         RetTimer::Ok
-        // timer.add_timer(mut handle: Handler<F>)
     }
 }
 
 fn main() {
-    println!("ok");
-    let mut timer = Timer::new(u64::MAX);
+    let mut timer = Timer::new(2000_000);
     let  time1 = timer.add_timer(Handler::new_step(
         RepeatTimeHandle{times:0}, 1000_000, true, true));
     println!("time == {}", time1);
-    loop {
-        timer.tick_time(tunm_timer::now_microsecond());
-        if timer.is_empty() {
-            break;
-        }
-    }
+    timer.run_loop_timer();
 }
