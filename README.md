@@ -1,3 +1,9 @@
+#tunm_timer
+==========
+
+简易定时器
+
+```rust
 extern crate tunm_timer;
 use tunm_timer::{Factory, Timer, RetTimer, Handler};
 
@@ -38,3 +44,4 @@ fn main() {
         }
     }
 }
+```
