@@ -38,10 +38,10 @@ fn main() {
     // println!("time == {}", time);
 
     let  time1 = timer.add_timer(Handler::new_step(
-        RepeatTimeHandle{times:0}, 1000, true, true));
+        RepeatTimeHandle{times:0}, 1000_000, true, true));
     println!("time == {}", time1);
     loop {
-        timer.tick_time(tunm_timer::now_micro() + 2000);
+        timer.tick_time(tunm_timer::now_microsecond());
         if timer.is_empty() {
             break;
         }

@@ -1,4 +1,4 @@
-use crate::{now_micro, Handler, Factory, RetTimer};
+use crate::{now_microsecond, Handler, Factory, RetTimer};
 use std::fmt;
 use std::cmp::{Ord, Ordering};
 use std::collections::HashMap;
@@ -50,10 +50,10 @@ impl<F:Factory> Timer<F> {
         let time_id = handle.time_id;
         if handle.tick_step != 0 {
             if handle.at_once {
-                handle.tick_ms = now_micro() + handle.tick_step;
+                handle.tick_ms = now_microsecond();
                 handle.at_once = false;
             } else {
-                handle.tick_ms = now_micro();
+                handle.tick_ms = now_microsecond() + handle.tick_step;
             }
         }
         self.time_maps.insert(time_id, handle.tick_ms);
