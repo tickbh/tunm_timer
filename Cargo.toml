@@ -1,6 +1,6 @@
 [package]
 name = "tunm_timer"
-version = "0.1.3"
+version = "0.1.4"
 authors = [ "tickbh <tickdream125@hotmail.com>" ]
 
 description = "simple timer, 简易定时器"

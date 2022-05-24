@@ -175,7 +175,6 @@ impl<F:Factory> Timer<F> {
             if self.trigger_step > 0 {
                 let escape = now_microsecond() - last_trigger_time;
                 if self.trigger_step > escape {
-                    println!("will sleep time = {:?}", self.trigger_step - escape);
                     let trigger_sleep = time::Duration::from_micros(self.trigger_step - escape);
                     thread::sleep(trigger_sleep);
                 }
